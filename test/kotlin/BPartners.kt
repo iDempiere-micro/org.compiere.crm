@@ -9,21 +9,23 @@ import org.idempiere.common.util.Env
 import org.idempiere.common.util.Ini
 import pg.org.compiere.db.DB_PostgreSQL
 
-class CalculatorTest {
+class BPartnerTests {
     @Test
     fun loading_saving_business_partner_work() {
-        Ini.getIni().setClient(false)
-        val log = CLogger.getCLogger(CalculatorTest::class.java)
+        Ini.getIni().isClient = false
+        CLogger.getCLogger(BPartnerTests::class.java)
         Ini.getIni().loadProperties(false)
-        val properties = Ini.getIni().properties
+        Ini.getIni().properties
         val db = Database()
         db.setDatabase(DB_PostgreSQL())
         DB.setDBTarget(CConnection.get(null))
         DB.isConnected()
 
         val ctx = Env.getCtx()
-        ctx.setProperty(Env.AD_CLIENT_ID, "11" )
-        Env.setContext(ctx, Env.AD_CLIENT_ID, "11" )
+        val AD_CLIENT_ID = 11
+        val AD_CLIENT_ID_s = AD_CLIENT_ID.toString()
+        ctx.setProperty(Env.AD_CLIENT_ID, AD_CLIENT_ID_s )
+        Env.setContext(ctx, Env.AD_CLIENT_ID, AD_CLIENT_ID_s )
 
         val id = 118
         val partner = MBPartner.get( Env.getCtx(), id )
@@ -46,5 +48,11 @@ class CalculatorTest {
 
         partner2.setValue( "JoeBlock" )
         partner2.save()
+
+        val newPartner = MBPartner.getTemplate(ctx, AD_CLIENT_ID)
+        newPartner.setName("Test 123")
+        newPartner.setValue("Test123")
+        newPartner.save()
+        newPartner.delete(true)
     }
 }
