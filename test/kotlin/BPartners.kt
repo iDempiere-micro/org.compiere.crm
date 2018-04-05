@@ -1,6 +1,6 @@
+import org.compiere.crm.*
 import org.junit.Assert
 import org.junit.Test
-import org.compiere.crm.MBPartner
 import org.idempiere.common.db.CConnection
 import org.idempiere.common.db.Database
 import org.idempiere.common.util.CLogger
@@ -53,6 +53,20 @@ class BPartnerTests {
         newPartner.setName("Test 123")
         newPartner.setValue("Test123")
         newPartner.save()
+
+        val defaultCountry = MCountry.getDefault(ctx)
+        val defaultRegion = MRegion.getDefault(ctx)
+        val location = MLocation( defaultCountry, defaultRegion )
+        location.save()
+        val partnerLocation = MBPartnerLocation( newPartner )
+        partnerLocation.c_Location_ID = location.c_Location_ID
+        partnerLocation.save()
+
+        val newPartner2 = MBPartner.get( Env.getCtx(), newPartner.c_BPartner_ID )
+        Assert.assertEquals( 1, newPartner2.locations.count() )
+
         newPartner.delete(true)
+
+        location.delete(true)
     }
 }
