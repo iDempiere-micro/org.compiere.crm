@@ -32,4 +32,10 @@ dependencies {
     compile project(':org.compiere.util')
     compile files('../org.compiere.util/bin')
 
+    testCompile project(':software.hsharp.db.postgresql.provider')
+    testCompile files('../software.hsharp.db.postgresql.provider/bin')
+
+    testCompile project(':org.compiere.db.postgresql.provider')
+    testCompile files('../org.compiere.db.postgresql.provider/bin')
+
 }
