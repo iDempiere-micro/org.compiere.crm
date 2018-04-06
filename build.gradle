@@ -37,5 +37,4 @@ dependencies {
 
     testCompile project(':org.compiere.db.postgresql.provider')
     testCompile files('../org.compiere.db.postgresql.provider/bin')
-
 }
