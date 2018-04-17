@@ -14,7 +14,6 @@ class BPartnerTests {
     fun loading_saving_business_partner_work() {
         Ini.getIni().isClient = false
         CLogger.getCLogger(BPartnerTests::class.java)
-        Ini.getIni().loadProperties(false)
         Ini.getIni().properties
         val db = Database()
         db.setDatabase(DB_PostgreSQL())
