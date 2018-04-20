@@ -34,9 +34,9 @@ public class MBPartner extends X_C_BPartner implements IBusinessPartner, I_C_BPa
      * 	@param AD_Client_ID client
      * 	@return Template Business Partner or null
      */
-    public static MBPartner getTemplate (Properties ctx, int AD_Client_ID)
+    public static I_C_BPartner getTemplate (Properties ctx, int AD_Client_ID)
     {
-        MBPartner template = getBPartnerCashTrx (ctx, AD_Client_ID);
+        I_C_BPartner template = getBPartnerCashTrx (ctx, AD_Client_ID);
         if (template == null)
             template = new MBPartner (ctx, 0, null);
         //	Reset
@@ -76,9 +76,9 @@ public class MBPartner extends X_C_BPartner implements IBusinessPartner, I_C_BPa
      * 	@param AD_Client_ID client
      * 	@return Cash Trx Business Partner or null
      */
-    public static MBPartner getBPartnerCashTrx (Properties ctx, int AD_Client_ID)
+    public static I_C_BPartner getBPartnerCashTrx (Properties ctx, int AD_Client_ID)
     {
-        MBPartner retValue = (MBPartner) MClientInfo.get(ctx, AD_Client_ID).getC_BPartnerCashTrx();
+        I_C_BPartner retValue = (I_C_BPartner) MClientInfo.get(ctx, AD_Client_ID).getC_BPartnerCashTrx();
         if (retValue == null)
             s_log.log(Level.SEVERE, "Not found for AD_Client_ID=" + AD_Client_ID);
 
@@ -932,4 +932,9 @@ public class MBPartner extends X_C_BPartner implements IBusinessPartner, I_C_BPa
         return ""+getC_BPartner_ID();
     }
 
+    @Override
+    public boolean save() { return super.save(); }
+
+    @Override
+    public void saveEx() { super.saveEx(); }
 }	//	MBPartner
