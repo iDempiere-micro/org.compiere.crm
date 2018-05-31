@@ -955,7 +955,41 @@ public class X_I_BPartner extends PO implements I_I_BPartner, I_Persistent
 		return (String)get_Value(COLUMNNAME_Value);
 	}
 
-    /** Get Record ID/ColumnName
+	@Override
+	public void setIsShipTo(boolean IsShipTo) {
+		set_Value (COLUMNNAME_I_IsShipTo, Boolean.valueOf(IsShipTo));
+	}
+
+	@Override
+	public boolean isShipTo() {
+		Object oo = get_Value(COLUMNNAME_I_IsShipTo);
+		if (oo != null)
+		{
+			if (oo instanceof Boolean)
+				return ((Boolean)oo).booleanValue();
+			return "Y".equals(oo);
+		}
+		return false;
+	}
+
+	@Override
+	public void setIsBillTo(boolean IsBillTo) {
+		set_Value (COLUMNNAME_I_IsBillTo, Boolean.valueOf(IsBillTo));
+	}
+
+	@Override
+	public boolean isBillTo() {
+		Object oo = get_Value(COLUMNNAME_I_IsBillTo);
+		if (oo != null)
+		{
+			if (oo instanceof Boolean)
+				return ((Boolean)oo).booleanValue();
+			return "Y".equals(oo);
+		}
+		return false;
+	}
+
+	/** Get Record ID/ColumnName
         @return ID/ColumnName pair
       */
     public KeyNamePair getKeyNamePair() 
