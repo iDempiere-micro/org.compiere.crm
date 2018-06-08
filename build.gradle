@@ -32,6 +32,9 @@ dependencies {
     compile project(':org.compiere.util')
     compile files('../org.compiere.util/bin')
 
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
+
     testCompile files('../org.compiere.db.postgresql.provider/c3p0-0.9.5.2.jar')
     testCompile files('../org.compiere.db.postgresql.provider/jcommon-1.0.24.jar')
 
@@ -43,5 +46,19 @@ dependencies {
 
     testCompile project(':org.adempiere.base')
     testCompile files('../org.adempiere.base/bin')
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
+}
+buildscript {
+    ext.kotlin_version = '1.2.41'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+apply plugin: 'kotlin'
+repositories {
+    mavenCentral()
 }

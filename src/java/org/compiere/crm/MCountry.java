@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.compiere.model.I_AD_Language;
 import org.compiere.model.I_C_Country;
 import org.compiere.orm.MClient;
@@ -238,6 +239,7 @@ public class MCountry extends X_C_Country
 	 * 	Get Translated Name
 	 *	@return name
 	 */
+	@JsonIgnore
 	public String getTrlName()
 	{
 		return getTrlName(Env.getAD_Language(Env.getCtx()));

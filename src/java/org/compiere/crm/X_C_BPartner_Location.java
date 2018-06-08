@@ -20,6 +20,7 @@ package org.compiere.crm;
 import java.sql.ResultSet;
 import java.util.Properties;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.compiere.model.I_C_BPartner_Location;
 import org.compiere.model.I_C_Location;
 import org.compiere.orm.MTable;
@@ -90,6 +91,7 @@ public class X_C_BPartner_Location extends PO implements I_Persistent
       return sb.toString();
     }
 
+    @JsonIgnore
 	public org.compiere.model.I_C_BPartner getC_BPartner() throws RuntimeException
     {
 		return (org.compiere.model.I_C_BPartner)MTable.get(getCtx(), org.compiere.model.I_C_BPartner.Table_Name)

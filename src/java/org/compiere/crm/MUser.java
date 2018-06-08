@@ -33,6 +33,8 @@ import java.util.logging.Level;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.compiere.model.I_AD_User;
 import org.compiere.orm.MClient;
 import org.compiere.orm.MRole;
@@ -670,6 +672,7 @@ public class MUser extends X_AD_User implements IUser
 	 * 	Get EMail Validation Code
 	 *	@return code
 	 */
+	@JsonIgnore
 	public String getEMailVerifyCode()
 	{
 		long code = getAD_User_ID() 
