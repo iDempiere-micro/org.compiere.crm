@@ -6,8 +6,29 @@ import javax.mail.internet.InternetAddress;
 import java.io.Serializable;
 import java.util.logging.Level;
 
-public class EMail implements Serializable {
+public class EMail extends software.hsharp.core.utils.EMail implements Serializable {
     protected transient static CLogger log = CLogger.getCLogger (EMail.class);
+
+    public EMail(
+            String smtpHost,
+            int smtpPort,
+            InternetAddress from,
+            InternetAddress replyTo,
+            String subject,
+            String userName,
+            String password,
+            String messageHTML)
+    {
+     super(
+        smtpHost,
+        smtpPort,
+        from,
+        replyTo,
+        subject,
+        userName,
+        password,
+        messageHTML);
+    }
 
     /**
      * 	Validate format of an email address
