@@ -29,6 +29,9 @@ dependencies {
     compile project(':org.compiere.orm')
     compile files('../org.compiere.orm/bin')
 
+    compile project(':org.compiere.process')
+    compile files('../org.compiere.process/bin')
+
     compile project(':org.compiere.util')
     compile files('../org.compiere.util/bin')
 
