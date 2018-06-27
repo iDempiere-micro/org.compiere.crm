@@ -7,11 +7,16 @@ import org.idempiere.common.util.DB
 import org.idempiere.common.util.Env
 import org.idempiere.common.util.KeyNamePair
 import org.idempiere.icommon.model.IPO
+import org.compiere.model.I_C_BPartner
+import org.compiere.model.I_C_ContactActivity
+import java.math.BigDecimal
 
 data class BPartnerFindResult(val id:Int, val name:String, val searchName : String, val taxid : String? )
 
 data class FindResult( val rows : List<Any> ) : java.io.Serializable {
 }
+
+data class BPartnerWithActivity(val BPartner : I_C_BPartner, val ContactActivity : I_C_ContactActivity? )
 
 class Find : SvrProcess() {
     var search : String = ""
@@ -48,7 +53,7 @@ class Find : SvrProcess() {
 
         val sql =
                 """
-select $columns from adempiere.C_BPartner
+select $columns from adempiere.bpartner_v
 where (value ilike ? or name ilike ? or referenceno ilike ? or duns ilike ? or taxid ilike ?) -- params 1..5
 and iscustomer = 'Y' and ad_client_id IN (0, ?) and ( ad_org_id IN (0,?) or ? = 0) and isactive = 'Y' -- params 6..8
 order by 1 desc
@@ -64,8 +69,6 @@ order by 1 desc
         statement.setString(4, sqlSearch)
         statement.setString(5, sqlSearch)
 
-
-
         statement.setInt(6, AD_CLIENT_ID)
         statement.setInt(7, AD_ORG_ID)
         statement.setInt(8, AD_ORG_ID)
@@ -76,12 +79,19 @@ order by 1 desc
 
         while(rs.next()) {
             if ( full ) {
-                val row = modelFactory.getPO( "C_BPartner", rs, "pokus")
+                val bpartner : I_C_BPartner = modelFactory.getPO( "C_BPartner", rs, "pokus") as I_C_BPartner
+                val c_contactactivity_id = rs.getObject("c_contactactivity_id") as BigDecimal?
+                val row = BPartnerWithActivity( bpartner,
+                        if (c_contactactivity_id ==null) { null } else {
+                            modelFactory.getPO( "C_ContactActivity", rs, "pokus", "activity_") as I_C_ContactActivity
+                        }
+                )
                 result.add(row)
             } else {
                 val name = rs.getString( "name" )
                 val foundIdx = name.toLowerCase().indexOf(search.toLowerCase())
-                val keyName = BPartnerFindResult( rs.getInt("c_bpartner_id"), name, name.substring(foundIdx), rs.getString( "taxid" ) )
+                val subName = if ( foundIdx > 0 ) { name.substring(foundIdx) } else { name }
+                val keyName = BPartnerFindResult(rs.getInt("c_bpartner_id"), name, subName, rs.getString("taxid"))
                 result.add(keyName)
             }
         }
