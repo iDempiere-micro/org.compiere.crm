@@ -13,10 +13,9 @@ import java.math.BigDecimal
 
 data class BPartnerFindResult(val id:Int, val name:String, val searchName : String, val taxid : String? )
 
-data class FindResult( val rows : List<Any> ) : java.io.Serializable {
-}
+data class FindResult( val rows : List<Any> ) : java.io.Serializable
 
-data class BPartnerWithActivity(val BPartner : I_C_BPartner, val ContactActivity : I_C_ContactActivity? )
+data class BPartnerWithActivity(val BPartner : I_C_BPartner, val ContactActivity : I_C_ContactActivity?, val BPartner_Category : String? )
 
 class Find : SvrProcess() {
     var search : String = ""
@@ -75,7 +74,7 @@ order by 1 desc
         val rs = statement.executeQuery()
 
         val modelFactory : IModelFactory = DefaultModelFactory()
-        var result = mutableListOf<Any>()
+        val result = mutableListOf<Any>()
 
         while(rs.next()) {
             if ( full ) {
@@ -84,7 +83,8 @@ order by 1 desc
                 val row = BPartnerWithActivity( bpartner,
                         if (c_contactactivity_id ==null) { null } else {
                             modelFactory.getPO( "C_ContactActivity", rs, "pokus", "activity_") as I_C_ContactActivity
-                        }
+                        },
+                        rs.getString("category_name")
                 )
                 result.add(row)
             } else {
@@ -107,7 +107,7 @@ order by 1 desc
                     }
                 }
 
-        return "<result>"
+        return "OK"
     }
 
 }

@@ -35,6 +35,9 @@ dependencies {
     compile project(':org.compiere.util')
     compile files('../org.compiere.util/bin')
 
+    compile project(':org.compiere.validation')
+    compile files('../org.compiere.validation/bin')
+
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
 
@@ -49,6 +52,8 @@ dependencies {
 
     testCompile project(':org.adempiere.base')
     testCompile files('../org.adempiere.base/bin')
+
+
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
 }
