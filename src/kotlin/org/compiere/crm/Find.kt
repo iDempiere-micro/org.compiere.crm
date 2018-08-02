@@ -43,9 +43,7 @@ class Find : SvrProcess() {
     override fun doIt(): String {
         val pi = processInfo
 
-        val ctx = Env.getCtx()
-
-        val tableName = "C_BPartner";
+        Env.getCtx()
 
         val columns =
                 if ( full ) { "*" } else { "c_bpartner_id,name,taxid" }

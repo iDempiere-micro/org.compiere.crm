@@ -31,7 +31,7 @@ class Detail : SvrProcess() {
     override fun doIt(): String {
         val pi = processInfo
 
-        val ctx = Env.getCtx()
+        Env.getCtx()
 
         val sql =
                 """
