@@ -1,27 +1,22 @@
 package org.compiere.crm
 
 import org.compiere.process.SvrProcess
-import org.idempiere.common.util.Env
+import java.io.Serializable
 
-class Import : SvrProcess() {
-    var i_bpartner_id : Int = 0
-    var AD_CLIENT_ID = 0 //AD_Client_ID
-    var AD_ORG_ID = 0 //AD_Org_ID
-
-    override fun prepare() {
-        for (para in parameter) {
-            if ( para.parameterName == "i_bpartner_id" ) {
-                i_bpartner_id = para.parameterAsInt
-            } else if ( para.parameterName == "AD_Client_ID" ) {
-                AD_CLIENT_ID = para.parameterAsInt
-            } else if ( para.parameterName == "AD_Org_ID" ) {
-                AD_ORG_ID = para.parameterAsInt
-            } else println( "unknown parameter ${para.parameterName}" )
-        }
+class Import : SvrProcessBase() {
+    override fun getResult(): Serializable {
+        return "OK"
     }
 
-    override fun doIt(): String {
-        return "OK"
+    var i_bpartner_id: Int = 0
+
+    override fun prepare() {
+        super.prepare()
+        for (para in parameter) {
+            if (para.parameterName == "i_bpartner_id") {
+                i_bpartner_id = para.parameterAsInt
+            }
+        }
     }
 
 }

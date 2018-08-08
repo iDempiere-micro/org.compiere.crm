@@ -1,5 +1,6 @@
 import org.compiere.crm.*
 import org.compiere.model.I_C_BPartner
+import org.compiere.model.I_C_ContactActivity
 import org.compiere.orm.DefaultModelFactory
 import org.compiere.orm.IModelFactory
 import org.junit.Assert
@@ -31,7 +32,7 @@ class BPartnerTests {
 
         val modelFactory : IModelFactory = DefaultModelFactory()
         val result = modelFactory.getPO( "C_BPartner", 118, "pokus")
-        println( result );
+        println( result )
         Assert.assertNotNull(result);
     }
 
@@ -51,8 +52,8 @@ class BPartnerTests {
         ctx.setProperty(Env.AD_CLIENT_ID, AD_CLIENT_ID_s )
         Env.setContext(ctx, Env.AD_CLIENT_ID, AD_CLIENT_ID_s )
 
-        val tableName = "C_BPartner";
-        val AD_ORG_ID = 0;
+        val tableName = "C_BPartner"
+        val AD_ORG_ID = 0
         val id = 118
 
         val sql =
@@ -72,8 +73,8 @@ class BPartnerTests {
 
         val modelFactory : IModelFactory = DefaultModelFactory()
         val result = modelFactory.getPO( tableName, rs, "pokus")
-        println( result );
-        Assert.assertNotNull(result);
+        println( result )
+        Assert.assertNotNull(result)
         Assert.assertEquals(id, result._ID)
 
         cnn.close()
@@ -95,8 +96,8 @@ class BPartnerTests {
         ctx.setProperty(Env.AD_CLIENT_ID, AD_CLIENT_ID_s )
         Env.setContext(ctx, Env.AD_CLIENT_ID, AD_CLIENT_ID_s )
 
-        val tableName = "C_BPartner";
-        val AD_ORG_ID = 0;
+        val tableName = "C_BPartner"
+        val AD_ORG_ID = 0
         val id = 118
 
         val sql =
@@ -117,12 +118,55 @@ class BPartnerTests {
         val modelFactory : IModelFactory = DefaultModelFactory()
         val result = modelFactory.getPO( tableName, rs, "pokus")
         val result2 = modelFactory.getPO( "M_PriceList", rs, "pokus")
-        println( result );
+        println( result )
+        println( result2 )
+        Assert.assertNotNull(result)
+        Assert.assertNotNull(result2)
+        Assert.assertEquals(id, result._ID)
+        Assert.assertEquals(101, result2._ID)
+
+        cnn.close()
+    }
+
+    @Test
+    fun getUsingDefaultModelFactoryFromRSSuperComplex() {
+        Ini.getIni().isClient = false
+        CLogger.getCLogger(BPartnerTests::class.java)
+        Ini.getIni().properties
+        val db = Database()
+        db.setDatabase(DB_PostgreSQL())
+        DB.setDBTarget(CConnection.get(null))
+        DB.isConnected()
+
+        val ctx = Env.getCtx()
+        val AD_CLIENT_ID = 11
+        val AD_CLIENT_ID_s = AD_CLIENT_ID.toString()
+        ctx.setProperty(Env.AD_CLIENT_ID, AD_CLIENT_ID_s )
+        Env.setContext(ctx, Env.AD_CLIENT_ID, AD_CLIENT_ID_s )
+
+        val tableName = "C_BPartner"
+        val AD_ORG_ID = 0
+        val id = 121
+
+        val sql = "select *, C_ContactActivity_ID as activity_C_ContactActivity_ID from adempiere.bpartner_v \n" +
+            "where c_contactactivity_id is not null\n" +
+            "order by 1, c_contactactivity_id asc"
+
+        println ( "SQL:$sql" )
+        val cnn = DB.getConnectionRO()
+        val statement = cnn.prepareStatement(sql)
+        val rs = statement.executeQuery()
+        rs.next()
+
+        val modelFactory : IModelFactory = DefaultModelFactory()
+        val result = modelFactory.getPO( tableName, rs, "pokus")
+        val result2 = modelFactory.getPO("C_ContactActivity", rs, "pokus", "activity_") as I_C_ContactActivity
+        println( result )
         println( result2 );
         Assert.assertNotNull(result);
         Assert.assertNotNull(result2);
         Assert.assertEquals(id, result._ID)
-        Assert.assertEquals(101, result2._ID)
+        Assert.assertEquals(59, result2.c_ContactActivity_ID)
 
         cnn.close()
     }
