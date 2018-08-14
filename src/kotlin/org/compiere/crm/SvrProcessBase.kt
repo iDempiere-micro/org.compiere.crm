@@ -2,13 +2,14 @@ package org.compiere.crm
 
 import org.compiere.process.SvrProcess
 import org.idempiere.common.util.Env
+import software.hsharp.business.models.IDTOReady
 
 abstract class SvrProcessBase : SvrProcess() {
-    var AD_CLIENT_ID = 0 // AD_Client_ID
-    var AD_ORG_ID = 0 // AD_Org_ID
-    var AD_USER_ID = 0
+    protected var AD_CLIENT_ID = 0 // AD_Client_ID
+    protected var AD_ORG_ID = 0 // AD_Org_ID
+    protected var AD_USER_ID = 0
 
-    protected abstract fun getResult(): java.io.Serializable
+    protected abstract fun getResult(): IDTOReady
 
     override fun prepare() {
         for (para in parameter) {

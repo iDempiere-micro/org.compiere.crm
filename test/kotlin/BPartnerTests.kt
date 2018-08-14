@@ -12,6 +12,17 @@ import org.idempiere.common.util.DB
 import org.idempiere.common.util.Env
 import org.idempiere.common.util.Ini
 import pg.org.compiere.db.DB_PostgreSQL
+import java.util.Random
+
+// generates random string with small letters of a given length
+fun randomString(length: Int): String {
+    // helper extension function to generate random string based on a set
+    fun ClosedRange<Char>.randomString(length: Int) =
+        (1..length)
+            .map { (Random().nextInt(endInclusive.toInt() - start.toInt()) + start.toInt()).toChar() }
+            .joinToString("")
+    return ('a'..'z').randomString(length)
+}
 
 class BPartnerTests {
     @Test
@@ -146,11 +157,11 @@ class BPartnerTests {
 
         val tableName = "C_BPartner"
         val AD_ORG_ID = 0
-        val id = 121
+        val id = 118
 
-        val sql = "select *, C_ContactActivity_ID as activity_C_ContactActivity_ID from adempiere.bpartner_v \n" +
-            "where c_contactactivity_id is not null\n" +
-            "order by 1, c_contactactivity_id asc"
+        val sql = """select *, C_ContactActivity_ID as activity_C_ContactActivity_ID from adempiere.bpartner_v
+            where c_contactactivity_id is not null
+            order by 1, c_contactactivity_id asc"""
 
         println ( "SQL:$sql" )
         val cnn = DB.getConnectionRO()
@@ -166,7 +177,7 @@ class BPartnerTests {
         Assert.assertNotNull(result);
         Assert.assertNotNull(result2);
         Assert.assertEquals(id, result._ID)
-        Assert.assertEquals(59, result2.c_ContactActivity_ID)
+        Assert.assertEquals(123, result2.c_ContactActivity_ID)
 
         cnn.close()
     }
@@ -211,7 +222,7 @@ class BPartnerTests {
 
         val newPartner = MBPartner.getTemplate(ctx, AD_CLIENT_ID)
         newPartner.setName("Test 123")
-        newPartner.setValue("Test123")
+        newPartner.setValue("t-"+randomString(5))
         newPartner.save()
 
         val defaultCountry = MCountry.getDefault(ctx)

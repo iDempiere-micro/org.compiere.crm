@@ -7,11 +7,17 @@ import org.compiere.orm.IModelFactory
 import org.compiere.process.SvrProcess
 import org.idempiere.common.util.DB
 import org.idempiere.common.util.Env
+import org.idempiere.common.util.Trx
+import software.hsharp.business.models.IDTOReady
 import java.io.Serializable
 import java.math.BigDecimal
 import java.sql.Connection
 
-data class DetailResult(val bPartner: I_C_BPartner?, val categoryName: String?, val activities: MutableList<I_C_ContactActivity>) : java.io.Serializable
+data class DetailResult(
+    val bPartner: I_C_BPartner?,
+    val categoryName: String?,
+    val activities: MutableList<I_C_ContactActivity>
+) : IDTOReady
 
 class Detail : SvrProcessBaseSql() {
     override val isRO: Boolean
@@ -27,11 +33,11 @@ class Detail : SvrProcessBaseSql() {
         }
     }
 
-    override fun getSqlResult(cnn: Connection): Serializable {
+    override fun getSqlResult(cnn: Connection): IDTOReady {
         val sql =
             """
 select *, C_ContactActivity_ID as activity_C_ContactActivity_ID from bpartner_detail_v where c_bpartner_id = ?
-and ad_client_id IN (0, ?) and ( ad_org_id IN (0,?) or ? = 0) and isactive = 'Y'
+and ad_client_id IN (0, ?) and ( ad_org_id IN (0,?) or ? = 0) and isactive = 'Y' order by activity_startdate desc
 """.trimIndent()
 
         val statement = cnn.prepareStatement(sql)
@@ -50,13 +56,13 @@ and ad_client_id IN (0, ?) and ( ad_org_id IN (0,?) or ? = 0) and isactive = 'Y'
 
         while (rs.next()) {
             if (bpartner == null) {
-                bpartner = modelFactory.getPO("C_BPartner", rs, "pokus") as I_C_BPartner
+                bpartner = modelFactory.getPO("C_BPartner", rs, null) as I_C_BPartner
                 categoryName = rs.getString("category_name")
             }
 
             val c_contactactivity_id = rs.getObject("c_contactactivity_id") as BigDecimal?
             if (c_contactactivity_id != null) {
-                val activity = modelFactory.getPO("C_ContactActivity", rs, "pokus", "activity_") as I_C_ContactActivity
+                val activity = modelFactory.getPO("C_ContactActivity", rs, null, "activity_") as I_C_ContactActivity
                 activities.add(activity)
             }
         }
