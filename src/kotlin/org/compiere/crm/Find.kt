@@ -15,6 +15,7 @@ import software.hsharp.business.models.IBusinessPartner
 import software.hsharp.business.core.BusinessPartner
 import software.hsharp.business.core.BusinessPartnerLocation
 import software.hsharp.business.models.IBusinessPartnerLocation
+import java.sql.PreparedStatement
 
 data class BPartnerFindResult(val id: Int, val name: String, val searchName: String, val taxid: String?)
 
@@ -22,39 +23,10 @@ data class FindResult(val rows: List<Any>) : IDTOReady
 
 data class BPartnerWithActivity(val BPartner: IBusinessPartner, val ContactActivity: IContactActivity?, val BPartner_Category: String?)
 
-class Find : SvrProcessBaseSql() {
-    override val isRO: Boolean
-        get() = true
-    var search: String = ""
-    var full: Boolean = false
-
-    override fun prepare() {
-        super.prepare()
-        for (para in parameter) {
-            if (para.parameterName == "Search") {
-                search = para.parameterAsString
-            } else if (para.parameterName == "Full") {
-                full = para.parameterAsBoolean
-            }
-        }
-    }
-
-    override fun getSqlResult(cnn: Connection): IDTOReady {
-
-        val columns =
-            if (full) { "*, C_ContactActivity_ID as activity_C_ContactActivity_ID" } else { "c_bpartner_id,name,taxid" }
-
-        val sql =
-            """
-select $columns from adempiere.bpartner_v
-where (value ilike ? or name ilike ? or referenceno ilike ? or duns ilike ? or taxid ilike ?) -- params 1..5
-and ad_client_id IN (0, ?) and ( ad_org_id IN (0,?) or ? = 0) and isactive = 'Y' -- params 6..8
-order by 1 desc
-                """.trimIndent()
-
+class Find : BaseBPartnerSearch() {
+    override fun setStatementParams(statement: PreparedStatement) {
         val sqlSearch = "%$search%".toLowerCase()
 
-        val statement = cnn.prepareStatement(sql)
         statement.setString(1, sqlSearch)
         statement.setString(2, sqlSearch)
         statement.setString(3, sqlSearch)
@@ -64,38 +36,19 @@ order by 1 desc
         statement.setInt(6, AD_CLIENT_ID)
         statement.setInt(7, AD_ORG_ID)
         statement.setInt(8, AD_ORG_ID)
-        val rs = statement.executeQuery()
-
-        val modelFactory: IModelFactory = DefaultModelFactory()
-        val result = mutableListOf<Any>()
-
-
-        while (rs.next()) {
-            if (full) {
-                val bpartner: I_C_BPartner = modelFactory.getPO("C_BPartner", rs, null) as I_C_BPartner
-                val c_contactactivity_id = rs.getObject("c_contactactivity_id") as BigDecimal?
-                val row = BPartnerWithActivity(
-                    BusinessPartner(
-                        bpartner.c_BPartner_ID, bpartner.name, bpartner.value, bpartner.locations.map { BusinessPartnerLocation(it) }.toTypedArray()
-                    ),
-                    if (c_contactactivity_id == null) { null } else {
-                        ContactActivity(
-                            modelFactory.getPO("C_ContactActivity", rs, null, "activity_") as I_C_ContactActivity
-                        )
-                    },
-                    rs.getString("category_name")
-                )
-                result.add(row)
-            } else {
-                val name = rs.getString("name")
-                val foundIdx = name.toLowerCase().indexOf(search.toLowerCase())
-                val subName = if (foundIdx > 0) { name.substring(foundIdx) } else { name }
-                val keyName = BPartnerFindResult(rs.getInt("c_bpartner_id"), name, subName, rs.getString("taxid"))
-                result.add(keyName)
-            }
-        }
-
-        return FindResult(result)
     }
 
+    override fun getSql(): String {
+        val columns =
+            if (full) { "*, C_ContactActivity_ID as activity_C_ContactActivity_ID" } else { "c_bpartner_id,name,taxid" }
+
+        val sql =
+            """
+select $columns from adempiere.bpartner_v
+where (value ilike ? or name ilike ? or referenceno ilike ? or duns ilike ? or taxid ilike ?) -- params 1..5
+and ad_client_id IN (0, ?) and ( ad_org_id IN (0,?) or ? = 0) and isactive = 'Y' -- params 6..8
+order by name asc
+                """.trimIndent()
+        return sql
+    }
 }
